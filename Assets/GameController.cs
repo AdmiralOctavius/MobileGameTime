@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// Controls the main gameplay
@@ -7,11 +9,20 @@ public class GameController : MonoBehaviour
 {
     [Tooltip("A reference to the tile we want to spawn")]
     public Transform tile;
+
+    [Tooltip("Reference to the obstacle we want to spawn")]
+    public Transform obstacle;
+
     [Tooltip("Where the first tile should be placed at")]
     public Vector3 startPoint = new Vector3(0, 0, -5);
+
     [Tooltip("How many tiles should we create in advance")]
     [Range(1, 15)]
     public int initSpawnNum = 10;
+
+    [Tooltip("How many tile to spawn without obstacles")]
+    [Range(0, 5)]
+    public int initNoObstacles = 4;
     /// <summary>
     /// Where the next tile should be spawned at.
     /// </summary>
@@ -30,13 +41,13 @@ public class GameController : MonoBehaviour
         nextTileRotation = Quaternion.identity;
         for (int i = 0; i < initSpawnNum; ++i)
         {
-            SpawnNextTile();
+            SpawnNextTile(i>= initNoObstacles);
         }
     }
     /// <summary>
     /// Will spawn a tile at a certain location and setup the next position
     /// </summary>
-    public void SpawnNextTile()
+    public void SpawnNextTile(bool spawnObstacles=true)
     {
         var newTile = Instantiate(tile, nextTileLocation,
         nextTileRotation);
@@ -45,6 +56,29 @@ public class GameController : MonoBehaviour
         var nextTile = newTile.Find("Next Spawn Point");
         nextTileLocation = nextTile.position;
         nextTileRotation = nextTile.rotation;
+
+        if (!spawnObstacles)
+        {
+            return;
+        }
+
+        var obstacleSpawnPoints = new List<GameObject>();
+        foreach (Transform item in newTile)
+        {
+            if (item.CompareTag("ObstacleSpawn"))
+            {
+                obstacleSpawnPoints.Add(item.gameObject);
+            }
+        }
+
+        if (obstacleSpawnPoints.Count > 0)
+        {
+            var spawnPoint = obstacleSpawnPoints[UnityEngine.Random.Range(0, obstacleSpawnPoints.Count)];
+            var spawnPos = spawnPoint.transform.position;
+            var newObstacle = Instantiate(obstacle, spawnPos, Quaternion.identity);
+
+            newObstacle.SetParent(spawnPoint.transform);
+        }
     }
 }
 
