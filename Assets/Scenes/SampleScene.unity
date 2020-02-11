@@ -433,6 +433,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dodgeSpeed: 5
   rollSpeed: 5
+  horizonMovement: 1
+  minSwipeDistance: 2
+  swipeMove: 3
+  touchStart: {x: 0, y: 0}
 --- !u!1 &2022831509
 GameObject:
   m_ObjectHideFlags: 0
