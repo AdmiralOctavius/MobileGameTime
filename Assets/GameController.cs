@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour
     [Tooltip("Reference to the obstacle we want to spawn")]
     public Transform obstacle;
 
+    public Transform obstacle2;
+
     [Tooltip("Where the first tile should be placed at")]
     public Vector3 startPoint = new Vector3(0, 0, -5);
 
@@ -70,12 +72,20 @@ public class GameController : MonoBehaviour
                 obstacleSpawnPoints.Add(item.gameObject);
             }
         }
-
+        Transform newObstacle;
         if (obstacleSpawnPoints.Count > 0)
         {
             var spawnPoint = obstacleSpawnPoints[UnityEngine.Random.Range(0, obstacleSpawnPoints.Count)];
             var spawnPos = spawnPoint.transform.position;
-            var newObstacle = Instantiate(obstacle, spawnPos, Quaternion.identity);
+            if(UnityEngine.Random.Range(0,2) == 1)
+            {
+                newObstacle = Instantiate(obstacle, spawnPos, Quaternion.identity);
+
+            }
+            else
+            {
+                newObstacle = Instantiate(obstacle2, spawnPos, obstacle2.transform.rotation);
+            }
 
             newObstacle.SetParent(spawnPoint.transform);
         }
