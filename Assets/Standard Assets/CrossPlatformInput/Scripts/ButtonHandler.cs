@@ -16,6 +16,8 @@ namespace UnityStandardAssets.CrossPlatformInput
         public void SetDownState()
         {
             CrossPlatformInputManager.SetButtonDown(Name);
+            //Do calculation for dodge
+
         }
 
 

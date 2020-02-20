@@ -71,11 +71,11 @@ public class PlayerBehavior : MonoBehaviour
 
 #if UNITY_STANDALONE || UNITY_WEBGL || UNITY_EDITOR
         horizontalSpeed = Input.GetAxis("Horizontal") * dodgeSpeed;
-
-        if (Input.GetMouseButton(0))
+        
+       /* if (Input.GetMouseButton(0))
         {
             horizontalSpeed = CalculateMovement(Input.mousePosition);
-        }
+        }*/
 
 #endif
 #if UNITY_IOS || UNITY_ANDROID
