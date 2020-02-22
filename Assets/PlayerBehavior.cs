@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public enum MobileHorizMovement
 {
@@ -70,12 +71,30 @@ public class PlayerBehavior : MonoBehaviour
         float horizontalSpeed = 0.0f;
 
 #if UNITY_STANDALONE || UNITY_WEBGL || UNITY_EDITOR
-        horizontalSpeed = Input.GetAxis("Horizontal") * dodgeSpeed;
-        
-       /* if (Input.GetMouseButton(0))
+        //horizontalSpeed = Input.GetAxis("Horizontal") * dodgeSpeed;
+        horizontalSpeed = CrossPlatformInputManager.GetAxis("Horizontal") * dodgeSpeed;
+        //Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+        if (CrossPlatformInputManager.GetButton("Jump"))
         {
-            horizontalSpeed = CalculateMovement(Input.mousePosition);
-        }*/
+            if (CrossPlatformInputManager.GetAxis("Horizontal") == 0)
+            {
+                //Do nothing
+            }
+            else if (CrossPlatformInputManager.GetAxis("Horizontal") > 0)
+            {
+                Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+                ButtonTeleport(false);
+            }
+            else
+            {
+                Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+                ButtonTeleport(true);   
+            }
+        }
+        /* if (Input.GetMouseButton(0))
+         {
+             horizontalSpeed = CalculateMovement(Input.mousePosition);
+         }*/
 
 #endif
 #if UNITY_IOS || UNITY_ANDROID
@@ -83,16 +102,42 @@ public class PlayerBehavior : MonoBehaviour
         {
             horizontalSpeed = Input.acceleration.x * dodgeSpeed;
         }
+
+        //New mobile calculation to call for dodge button
+        if (CrossPlatformInputManager.GetButton("Jump"))
+        {
+            if (CrossPlatformInputManager.GetAxis("Horizontal") == 0)
+            {
+                //Do nothing
+            }
+            else if (CrossPlatformInputManager.GetAxis("Horizontal") > 0)
+            {
+                Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+                ButtonTeleport(false);
+            }
+            else
+            {
+                Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+                ButtonTeleport(true);
+            }
+        }
         if (Input.touchCount > 0)
         {
-            Touch myTouch = Input.touches[0];
+            //New Mobile Implementation
+            horizontalSpeed = CrossPlatformInputManager.GetAxis("Horizontal") * dodgeSpeed;
+            Debug.Log(CrossPlatformInputManager.GetAxis("Horizontal").ToString());
+            //Old mobile input code
+            /*Touch myTouch = Input.touches[0];
+            
             if (horizonMovement == MobileHorizMovement.ScreenTouch)
             {
                 horizontalSpeed = CalculateMovement(myTouch.position);
             }
             SwipeTeleport(myTouch);
-            TouchObjects(myTouch);
+            TouchObjects(myTouch);*/
         }
+
+
 #endif
         //Keyboard
         //var horizontalSpeed = Input.GetAxis("Horizontal")*dodgeSpeed;
@@ -167,6 +212,26 @@ public class PlayerBehavior : MonoBehaviour
             {
                 rb.MovePosition(rb.position + (moveDirection * swipeMove));
             }
+        }
+    }
+
+    //New Dodge Calculate function
+    private void ButtonTeleport(bool IsLeft)
+    {
+        Vector3 moveDirection;
+        if (IsLeft)
+        {
+            moveDirection = Vector3.left;
+        }
+        else
+        {
+            moveDirection = Vector3.right;
+        }
+
+        RaycastHit hit;
+        if (!rb.SweepTest(moveDirection, out hit, swipeMove))
+        {
+            rb.MovePosition(rb.position + (moveDirection * swipeMove));
         }
     }
 
